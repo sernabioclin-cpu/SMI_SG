@@ -148,12 +148,18 @@ const TB = {"EXT":[["Polvo químico seco (PQS)","0.75 KG",0],["Polvo químico se
  set("S01",{t:"Extintores por agente y capacidad",sub:"P03 cantidad mínima y máxima de equipos que requiere; P04 cuántos del requerimiento original ya no necesita.",cols:["Agente","Capacidad"],rows:TB.EXT.map(r=>[r[0],r[1],r[2]]),f:[F("min","Mínimo"),F("max","Máximo"),F("baja","Ya no necesita")]});
  const AG=TB.EXT.map(r=>r[0]).filter((x,i,a)=>a.indexOf(x)===i);
  Object.assign(DATA.svcs.find(s=>s.c==="S01"),{hideQ:["P03","P04","P07"],tbx:[
-  {id:"ADI",t:"Equipos adicionales (P05)",sub:"Solo si contestó Sí en P05: equipos que no estaban en el requerimiento original o de otra capacidad. La justificación general va en P06.",n:6,f:[F("ag","Agente","sel"),F("cap","Capacidad","txt"),F("min","Mínimo"),F("max","Máximo")],sel:AG},
+  {id:"ADI",t:"Equipos adicionales (P05)",sub:"Solo si contestó Sí en P05: equipos que no estaban en el requerimiento original o de otra capacidad. La justificación general va en P06.",n:6,f:[F("ag","Agente","sel"),F("cap","Capacidad","txt"),F("uni","Unidad (kg, L, lb)","txt"),F("min","Mínimo"),F("max","Máximo")],sel:AG},
   {id:"MAN",t:"Mantenimiento y recarga (P07)",sub:"Una fila por tipo y capacidad de equipo: qué servicio requiere (preventivo, correctivo o recarga), con qué periodicidad y cuántos equipos.",n:12,f:[F("eq","Tipo y capacidad del equipo","txt"),F("srv","Servicio","sel"),F("per","Periodicidad","txt"),F("num","Equipos")],sel:["Mantenimiento preventivo","Mantenimiento correctivo","Recarga"]}]});
- set("S13",{t:"Materiales e insumos mensuales",sub:"LH-05 cantidad mensual mínima y máxima por material. El original es la cantidad mensual registrada.",cols:["Material","Unidad"],rows:TB.LH.map(r=>[r[0],r[1],r[2]]),f:[F("min","Mín. mensual"),F("max","Máx. mensual")]});
- set("S12",{t:"Ropa hospitalaria por prenda o bulto",sub:"LAV-02/03 cantidad mínima y máxima en comodato; LAV-04/05 cantidad mínima y máxima a lavar por ciclo de recolección.",cols:["Prenda o bulto",""],rows:TB.LAV.map(r=>[r[0],"",r[1]]),f:[F("cmin","Comodato mín."),F("cmax","Comodato máx."),F("lmin","Lavado/ciclo mín."),F("lmax","Lavado/ciclo máx.")]});
- set("S06",{t:"Inventario de equipos electromecánicos",sub:"EM-03 equipos que ya no requieren mantenimiento (baja, retiro, sustitución o traslado); EM-07 frecuencia de mantenimiento preventivo que se necesita si es distinta.",cols:["Equipo","Marca · modelo · serie · estado"],rows:TB.EM.map(r=>[r[1]+" ("+r[0].toLowerCase()+")",r[2]+" · "+r[3]+" · "+r[4]+" · "+r[6],r[7]]),orig:"Frecuencia original",f:[F("sit","Situación","sel"),F("frec","Frecuencia requerida","txt")],sel:SEL});
- set("S05",{t:"Residuos CRETIB registrados",sub:"CRE-07 kg mínimos y máximos mensuales por tipo de residuo, y frecuencia de recolección.",cols:["Registro","Tipo"],rows:TB.CRE.map(r=>[r[0],r[1],r[2]+" – "+r[3]+" kg · "+r[4]]),orig:"Original (mín – máx · frecuencia)",f:[F("min","Kg mín. mensual"),F("max","Kg máx. mensual"),F("frec","Frecuencia","txt")]});
+ const X=(c,hide,tbx)=>Object.assign(DATA.svcs.find(s=>s.c===c),{hideQ:hide,tbx});
+ X("S13",["LH-05","LH-07"],[{id:"ADI",t:"Materiales o insumos adicionales (LH-07)",sub:"Solo si contestó Sí en LH-06: materiales que no están en el catálogo original.",n:8,f:[F("con","Concepto","txt"),F("esp","Especificación","txt"),F("uni","Unidad","txt"),F("min","Mín. mensual"),F("max","Máx. mensual"),F("just","Justificación","txt")]}]);
+ X("S06",["EM-03","EM-05","EM-07"],[{id:"ADI",t:"Equipos adicionales (EM-05)",sub:"Solo si contestó Sí en EM-04: equipos electromecánicos que no están en el inventario original.",n:8,f:[F("tipo","Tipo de equipo","txt"),F("marca","Marca","txt"),F("mod","Modelo","txt"),F("serie","Serie o inventario","txt"),F("cant","Cantidad")]}]);
+ X("S05",["04","07"],[{id:"ALT",t:"Otros tipos de residuo (altas en 04)",sub:"Tipos de residuo peligroso que genera la unidad y no están en el registro original.",n:5,f:[F("tipo","Tipo de residuo","txt"),F("desc","Descripción","txt"),F("min","Kg mín. mensual"),F("max","Kg máx. mensual")]}]);
+ X("S20",["P03","P04"],[{id:"ALT",t:"Alimentos adicionales (P06)",sub:"Solo si contestó Sí en P06: alimentos que no están en la tabla original.",n:8,f:[F("nom","Alimento","txt"),F("uni","Presentación y unidad","txt"),F("min","Anual mín."),F("max","Anual máx."),F("just","Justificación","txt")]},{id:"RET",t:"Alimentos a retirar (P07)",sub:"Solo si contestó Sí en P07: renglón y nombre del alimento que ya no se requiere.",n:8,f:[F("ren","Renglón","txt"),F("nom","Alimento","txt"),F("mot","Motivo","txt")]}]);
+ X("S12",["LAV-02","LAV-03","LAV-04","LAV-05"],null);
+ set("S13",{t:"Materiales e insumos mensuales",sub:"LH-05 cantidad mensual mínima y máxima por material. El original es la cantidad mensual registrada.",cols:["Material","Unidad"],rows:TB.LH.map(r=>[r[0],r[1],r[2]]),f:[F("min","Mín. mensual"),F("max","Máx. mensual"),F("just","Justificación si aumenta","txt")]});
+ set("S12",{t:"Ropa hospitalaria por prenda o bulto",sub:"LAV-02/03 cantidad mínima y máxima en comodato; LAV-04/05 cantidad mínima y máxima a lavar por ciclo de recolección.",cols:["Prenda o bulto",""],rows:TB.LAV.map(r=>[r[0],"",r[1]]),f:[F("cmin","Comodato mín."),F("cmax","Comodato máx."),F("lmin","Lavado/ciclo mín."),F("lmax","Lavado/ciclo máx."),F("just","Justificación si aumenta el comodato","txt")]});
+ set("S06",{t:"Inventario de equipos electromecánicos",sub:"EM-03 equipos que ya no requieren mantenimiento (baja, retiro, sustitución o traslado); EM-07 frecuencia de mantenimiento preventivo que se necesita si es distinta.",cols:["Equipo","Marca · modelo · serie · estado"],rows:TB.EM.map(r=>[r[1]+" ("+r[0].toLowerCase()+")",r[2]+" · "+r[3]+" · "+r[4]+" · "+r[6],r[7]]),orig:"Frecuencia original",f:[F("sit","Situación","sel"),F("frec","Frecuencia requerida (si cambia)","txt"),F("mot","Motivo del cambio","txt")],sel:SEL});
+ set("S05",{t:"Residuos CRETIB registrados",sub:"CRE-07 kg mínimos y máximos mensuales por tipo de residuo, y frecuencia de recolección.",cols:["Registro","Tipo"],rows:TB.CRE.map(r=>[r[0],r[1],r[2]+" – "+r[3]+" kg · "+r[4]]),orig:"Original (mín – máx · frecuencia)",f:[F("gen","¿Lo sigue generando?","sel"),F("min","Kg mín. mensual"),F("max","Kg máx. mensual")],sel:["Sí","Ya no lo genera"]});
 })();
 const SVCS = DATA.svcs, BYC = Object.fromEntries(SVCS.map(s=>[s.c,s]));
 const SUBS = c=>SVCS.filter(s=>s.parent===c);
@@ -172,6 +178,7 @@ function oficialKind(t){
   if(/6 enteros/.test(t))return"six";
   if(/Mínimo y máximo/.test(t))return"minmax";
   if(/Lunes a viernes/.test(t))return"days";
+  if(/^Texto \/ selección$/.test(t))return"week";
   if(/Plazo y unidad/.test(t))return"plazo";
   if(/Diario \/ Cada tercer/.test(t))return"freq";
   if(/^Selección múltiple/.test(t))return"etapas";
@@ -181,7 +188,7 @@ function oficialKind(t){
   return"text";
 }
 function yesnoOpts(t){const o=[["SI","Sí"],["NO","No"]];if(/No se ha entregado/.test(t))o.push(["NE","No se ha entregado"]);if(/No se cuenta/.test(t))o.push(["NI","No se cuenta con información"]);return o}
-function yesnoDetail(t){return /detalle|descripción|renglones|renglón|edición por concepto/.test(t)}
+function yesnoDetail(t,id){return /detalle|descripción|renglón|edición por concepto/.test(t)||id==="10"}
 function textHint(t){
   if(/concepto|producto|Matriz|Tabla|Listado|registros|por equipo|Equipo \+|Selección de equipos/.test(t))return"Anote una línea por concepto (concepto · cantidad mínima · cantidad máxima · motivo). En la plataforma se captura en tabla.";
   if(/Horario/.test(t))return"Ejemplo: recolección 7:00–9:00, entrega 15:00–17:00.";
@@ -199,7 +206,7 @@ function questionsFor0(s){ // normalized list: {id,sec,x,kind,opts,req,help,min,
       let cond=null;
       if(s.t!=="OX"){ if(!first&&/S[ií] ?\/ ?No/.test(t)) first=id; else if(first) cond={p:first,v:/no requiere el servicio/i.test(x)?["NO"]:["SI"]}; } const k=oficialKind(t);
       let mod=s.t==="OX"?a:null;
-      out.push({id,sec:mod&&mod!=="Ambas"?("Modalidad "+mod.toLowerCase()):"Cuestionario oficial",x,kind:k,t,opts:k==="yesno"?yesnoOpts(t):null,detail:k==="yesno"&&yesnoDetail(t),
+      out.push({id,sec:mod&&mod!=="Ambas"?("Modalidad "+mod.toLowerCase()):"Cuestionario oficial",x,kind:k,t,opts:k==="yesno"?yesnoOpts(t):null,detail:k==="yesno"&&yesnoDetail(t,id),
         ref:TB.REF[s.t+":"+id]??TB.REF[id],req:k==="text"?/obligatori/i.test(t):!/opcional/i.test(t),help:k==="text"?textHint(t):"",max:s.t==="OX"?null:(typeof b==="number"?b:null),mod,cond});
     }
   }
@@ -273,6 +280,8 @@ function fieldHTML(c,q,v){
     case"days": {
       const arr=Array.isArray(v)?v:[];
       return `<div class="opts">${[["LV","Lunes a viernes"],["SAB","Sábados"],["DOM","Domingos"]].map(([val,lab])=>`<label><input type="checkbox" data-q="${q.id}" data-multi="1" value="${val}" ${arr.includes(val)?"checked":""} ${dis}>${lab}</label>`).join("")}</div>`;}
+    case"week": { const arr=Array.isArray(v)?v:[];
+      return `<div class="opts">${["Lunes","Martes","Miércoles","Jueves","Viernes","Sábado","Domingo"].map(d=>`<label><input type="checkbox" data-q="${q.id}" data-multi="1" value="${d}" ${arr.includes(d)?"checked":""} ${dis}>${d}</label>`).join("")}</div>`;}
     case"modalidad": return `<div class="opts">${[["H","Hospitalario"],["D","Domiciliario"],["A","Ambas"]].map(([val,lab])=>`<label><input type="radio" name="${nm}" data-q="${q.id}" value="${val}" ${v===val?"checked":""} ${dis}>${lab}</label>`).join("")}</div>`;
     case"number": return `<input type="number" id="${nm}" data-q="${q.id}" min="0" step="any" value="${esc(v??"")}" style="max-width:220px" ${dis}>${q.ref!=null?`<span class="help">Original registrado: <b class="tnum">${typeof q.ref==="number"?q.ref.toLocaleString("es-MX"):esc(q.ref)}</b></span>`:""}${q.max!=null?`<span class="help">Máximo que acepta la plataforma: <span class="tnum">${q.max.toLocaleString("es-MX")}</span></span>`:""}`;
     case"minmax": case"six": {
@@ -399,9 +408,13 @@ function renderUnidad(){
   $("#main").innerHTML=`<div class="panel"><h2>Prioridades y cierre</h2><p class="sub">Paso 3 y paso 5 de la plataforma: ordenar los servicios que la unidad requiere (le faltan, no le alcanzan o funcionan con fallas) y las preguntas finales.</p>
    <div class="grid2"><div><h3 style="font-size:14px">Servicios Médicos · prioridad (1 = más importante)</h3><div class="tablewrap"><table><tbody>${opts("M")}</tbody></table></div></div>
    <div><h3 style="font-size:14px">Servicios Generales · prioridad</h3><div class="tablewrap"><table><tbody>${opts("G")}</tbody></table></div></div></div>
+   <div class="sec"><h4>Quién responde (paso 2 de la plataforma, uno por bloque)</h4>
+   ${[["M","Servicios Médicos"],["G","Servicios Generales"]].map(([b,l])=>{const r=(unidad.resp||{})[b]||{};return `<p style="margin:10px 0 4px;font-weight:600">${l}</p><div class="grid2">${[["nombre","Nombre completo"],["cargo","Cargo"],["tel","Teléfono (10 dígitos)"],["ext","Extensión (opcional)"],["correo","Correo (opcional)"]].map(([k,lab])=>`<label class="f">${lab}<input type="text" id="u_resp_${b}_${k}" data-ur="${b}" data-urk="${k}" value="${esc(r[k]??"")}" ${canWrite?"":"disabled"}></label>`).join("")}</div>`}).join("")}</div>
+   <div class="sec"><h4>Aspectos que requieren mejora (uno por bloque)</h4>
+   <label class="f">Servicios Médicos (máximo 2,000 caracteres)<textarea id="u_mejoraM" data-u="mejoraM" maxlength="2000" ${canWrite?"":"disabled"}>${esc(unidad.mejoraM??"")}</textarea></label>
+   <label class="f" style="margin-top:10px">Servicios Generales (máximo 2,000 caracteres)<textarea id="u_mejoraG" data-u="mejoraG" maxlength="2000" ${canWrite?"":"disabled"}>${esc(unidad.mejoraG??"")}</textarea></label></div>
    <div class="sec"><h4>Preguntas finales</h4>
-   <label class="f">¿Qué aspectos de los servicios considera que requieren mejora? (máximo 2,000 caracteres)<textarea id="u_mejora" data-u="mejora" maxlength="2000" ${canWrite?"":"disabled"}>${esc(unidad.mejora??"")}</textarea></label>
-   <label class="f" style="margin-top:10px">¿Requiere algún otro servicio que no esté en la lista? Escriba cuál y para qué lo necesita.<textarea id="u_otros" data-u="otros" ${canWrite?"":"disabled"}>${esc(unidad.otros??"")}</textarea></label></div>
+   <label class="f">¿Requiere algún otro servicio que no esté en la lista? Escriba cuál y para qué lo necesita.<textarea id="u_otros" data-u="otros" ${canWrite?"":"disabled"}>${esc(unidad.otros??"")}</textarea></label></div>
    <p class="saving" id="savestate"></p></div>`;
 }
 function fmtAns(q,v){
@@ -435,7 +448,7 @@ function renderResumen(){
     for(const s of mine().filter(x=>x.b===b&&!x.parent)){const rows=rowsFor(s), e=estadoOf(s);
       h+=`<div class="res-svc"><h3>${esc(s.n)} ${chip(e)} ${pri[s.c]?`<span class="chip st-vacio">Prioridad ${esc(pri[s.c])}</span>`:""}</h3>${rows.length>1?rows.map(([q,a])=>`<div class="res-row"><div>${esc(q)}</div><div class="a">${esc(a)}</div></div>`).join(""):`<p class="empty">Sin respuestas todavía.</p>`}</div>`;}
   }
-  h+=`<div class="res-svc"><h3>Preguntas finales</h3><div class="res-row"><div>Aspectos que requieren mejora</div><div class="a">${esc(unidad.mejora||"—")}</div></div><div class="res-row"><div>Otros servicios</div><div class="a">${esc(unidad.otros||"—")}</div></div></div></div>`;
+  h+=`<div class="res-svc"><h3>Preguntas finales</h3>${[["M","Médicos"],["G","Generales"]].map(([b,l])=>{const r=(unidad.resp||{})[b]||{};return `<div class="res-row"><div>Quién responde · ${l}</div><div class="a">${esc([r.nombre,r.cargo,r.tel,r.ext&&"ext. "+r.ext,r.correo].filter(Boolean).join(" · ")||"—")}</div></div><div class="res-row"><div>Aspectos que requieren mejora · ${l}</div><div class="a">${esc(unidad["mejora"+b]||"—")}</div></div>`}).join("")}<div class="res-row"><div>Otros servicios</div><div class="a">${esc(unidad.otros||"—")}</div></div></div></div>`;
   $("#main").innerHTML=h;
 }
 async function downloadCsv(){
@@ -443,7 +456,7 @@ async function downloadCsv(){
   const lines=[["Bloque","Servicio","Estado","Prioridad","Pregunta / variable","Respuesta"].map(q).join(",")];
   const pri=unidad.prioridades||{};
   for(const s of mine().filter(x=>!x.parent)) for(const [k,v] of rowsFor(s)) lines.push([s.b==="M"?"Servicios Médicos":"Servicios Generales",s.n,ESTADOS[estadoOf(s)],pri[s.c]||"",k,v].map(q).join(","));
-  lines.push(["Unidad","Preguntas finales","","","Aspectos que requieren mejora",unidad.mejora||""].map(q).join(","));
+  for(const [b,l] of [["M","Médicos"],["G","Generales"]]){const r=(unidad.resp||{})[b]||{};lines.push(["Unidad","Quién responde",l,"","Nombre · cargo · teléfono · ext · correo",[r.nombre,r.cargo,r.tel,r.ext,r.correo].filter(Boolean).join(" · ")].map(q).join(","));lines.push(["Unidad","Aspectos que requieren mejora",l,"","",unidad["mejora"+b]||""].map(q).join(","))}
   lines.push(["Unidad","Preguntas finales","","","Otros servicios",unidad.otros||""].map(q).join(","));
   const url=URL.createObjectURL(new Blob(["\ufeff"+lines.join("\r\n")],{type:"text/csv;charset=utf-8"}));
   const a=document.createElement("a");a.href=url;a.download="Servicios_HGR_Reynosa_2027.csv";document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),5000);
@@ -470,6 +483,7 @@ document.addEventListener("input",ev=>{
   const t=ev.target; if(!canWrite)return;
   const c=current.startsWith("s-")?current.slice(2):null;
   if(t.dataset.u){patchU({[t.dataset.u]:t.value});return}
+  if(t.dataset.ur){patchU({resp:{[t.dataset.ur]:{[t.dataset.urk]:t.value}}});return}
   if(t.dataset.pri){patchU({prioridades:{[t.dataset.pri]:t.value}});return}
   if(!c)return;
   const d=doc(c);
